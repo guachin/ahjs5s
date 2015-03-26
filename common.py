@@ -17,10 +17,12 @@ except ImportError:
     except ImportError:
         import Queue as queue
 
+
 def eof_empty(b):
     if b:
         return b
     raise EOFError()
+
 
 class Config(dict):
     def __init__(self, config):
@@ -39,6 +41,7 @@ class Config(dict):
             log_handler.setFormatter(logging.Formatter(self['log_format']))
         self['logger'].addHandler(log_handler)
 
+
 class BaseServerConfig(dict):
     def __init__(self, config):
         dict.__init__(self, config)
@@ -46,24 +49,28 @@ class BaseServerConfig(dict):
             self['server_sockfamily'] = getattr(socket, self['server_sockfamily'])
         else:
             self['server_sockfamily'] = socket.AF_INET
-        if not 'server_addr' in self or not self['server_addr']:
+        if 'server_addr' not in self or not self['server_addr']:
             if self['server_sockfamily'] == socket.AF_INET:
                 self['server_addr'] = '0.0.0.0'
             elif self['server_sockfamily'] == socket.AF_INET6:
                 self['server_addr'] = '::'
-        if not 'backlog' in self:
+        if 'backlog' not in self:
             self['backlog'] = 50
+
 
 class ServerConfig(BaseServerConfig, Config):
     def __init__(self, config):
         Config.__init__(self, config)
         BaseServerConfig.__init__(self, config)
 
+
 class Server(object):
     def __init__(self, config):
         self.config = config
+
     def start_peer(self, peer_sock, peer_info):
         raise NotImplementedError()
+
     def start(self):
         try:
             sock = socket.socket(self.config['server_sockfamily'])

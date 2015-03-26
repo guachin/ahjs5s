@@ -7,15 +7,19 @@ import threading
 
 import set_proxy
 
+
 class Main(object):
     def __init__(self, config):
         self.config = config
+
     def load_config(self, config_path):
         with open(config_path) as config_file:
             return json.loads(config_file.read())
+
     def save_config(self, config_path, config):
         with open(config_path, 'w') as config_file:
             config_file.write(json.dumps(config))
+
     def start(self):
         try:
             prompt_input = raw_input
@@ -36,10 +40,12 @@ class Main(object):
                     set_proxy.set_proxy('http=127.0.0.1:%d' % (self.config['http_proxy_port'], ))
                 else:
                     print(self.config['translates']['start_menu'][language][1] % ('127.0.0.1', self.config['http_proxy_port']))
+
                 def start_main():
                     subprocess.call('3rd\\python\\python.exe main.py config.json > main.log 2>&1', shell=True)
                 threading.Thread(target=start_main).start()
                 main_config = self.load_config('config.json')
+
                 def start_polipo(socks_proxy_port, http_proxy_port):
                     subprocess.call('3rd\\polipo\polipo.exe socksParentProxy=127.0.0.1:%d proxyPort=%d > polipo.log 2>&1' % (socks_proxy_port, http_proxy_port), shell=True)
                 threading.Thread(target=start_polipo, args=(main_config['server_port'], self.config['http_proxy_port'])).start()
@@ -76,6 +82,7 @@ class Main(object):
                         self.save_config(os.path.join('windows', 'wizard.json'), self.config)
                     elif sel == 0:
                         break
+
 
 def main(json_path):
     with open(json_path) as json_file:
